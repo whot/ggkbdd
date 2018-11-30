@@ -40,9 +40,47 @@ your keyboard device. Then use this as argument here:
 > sudo ./ggkbdd.py --verbose /dev/input/event3
 ```
 
-The **mode toggle key** is hardcoded to CapsLock.
+Configuration
+=============
 
-Right now, a single key is hardcoded as macro key: `s` translates to `ab`.
+The config file is `$XDG_CONFIG_HOME/ggkbddrc` or the one specified
+with `--config path/to/config`. Its contents must be:
+
+```
+[General]
+ModeKey=CAPSLOCK
+
+[Macros]
+A=B C
+F11=H E L L O
+```
+
+This example uses capslock as the mode key and maps the A key to the key
+sequence "bc" and F11 to the key sequence "hello".
+
+All key-related entries must match the key names as defined in
+`linux/input-event-codes.h`.
+
+Use `evemu-record` or `evtest` to read the key codes.
+
+Coincidentally: capslock is a really bad mode key because we can only
+grab it **after** the key was sent and processed by everyone else too. So
+you'll have your capslock key randomly stuck. Pick a different key. There, I
+saved you some debugging if you bothered to actually read the README.
+
+Keyboard layouts
+================
+
+ggkbdd doesn't care about the keyboard layout you may have configured in the
+desktop environment, it sits below all that and effectively uses a US
+keyboard layout without a shift key. The keys always send the same evdev
+codes, whether you have qwerty, azerty or dvorak configured.
+
+This goes for both the input key and the output keys. If you map `KEY_Q` to
+`KEY_Z` this effectively maps 'a' to 'w' in azwerty or 'q' to 'y' in a
+german keyboard layout.
+
+You cannot map shift level keys like the exclamation mark, it's on `KEY_1`.
 
 About
 =====

@@ -1,0 +1,9 @@
+# All key entries must be as defined in linux/input-event-codes.h, without
+# the KEY_ prefix
+
+[General]
+ModeKey=CAPSLOCK
+
+[Macros]
+A=B C
+F11=H E L L O

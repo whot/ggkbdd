@@ -25,7 +25,7 @@ logger = logging.getLogger('ggkbdd')
 
 
 class Keyboard(object):
-    def __init__(self, path):
+    def __init__(self, path, mode_key, macros):
         self.fd = open(path, 'rb')
         # FIXME: O_NONBLOCK
         self._evdev = libevdev.Device(self.fd)
@@ -34,14 +34,10 @@ class Keyboard(object):
         d.name = f'{d.name} macro mode'
         self._uinput = d.create_uinput_device()
 
-        # FIXME: configurable
-        self._mode_key = libevdev.EV_KEY.KEY_CAPSLOCK
+        self._mode_key = mode_key
         self._in_macro_mode = False
 
-        # FIXME: configurable, obviously
-        self._macros = {
-                libevdev.EV_KEY.KEY_S: [libevdev.EV_KEY.KEY_A, libevdev.EV_KEY.KEY_B]
-                }
+        self._macros = macros
 
     def process(self):
         for e in self._evdev.events():
