@@ -30,8 +30,13 @@ class Keyboard(object):
         # FIXME: O_NONBLOCK
         self._evdev = libevdev.Device(self.fd)
 
-        d = libevdev.Device(self.fd)
-        d.name = f'{d.name} macro mode'
+        # We just enable every KEY_* code. This includes as-yet undefined
+        # ones because libevdev resolves those as KEY_1A2 hex names.
+        d = libevdev.Device()
+        d.name = f'{self._evdev.name} macro mode'
+        for key in libevdev.EV_KEY.codes:
+            if key.name.startswith('KEY_'):
+                d.enable(key)
         self._uinput = d.create_uinput_device()
 
         self._mode_key = mode_key
