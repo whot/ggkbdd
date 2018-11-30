@@ -71,10 +71,22 @@ class Daemon(object):
 
             macro = []
             for m in value.split(' '):
-                bit = libevdev.evbit(f'KEY_{m}')
+                keyname = m
+                press = True
+                release = True
+                if m[0] == '+':  # press only
+                    keyname = m[1:]
+                    release = False
+                elif m[0] == '-':  # release only
+                    keyname = m[1:]
+                    press = False
+                bit = libevdev.evbit(f'KEY_{keyname}')
                 if bit is None:
-                    raise Exception(f'Unable to map key {key}')
-                macro.append(bit)
+                    raise Exception(f'Unable to map key {keyname}')
+                if press:
+                    macro.append((bit, 1))
+                if release:
+                    macro.append((bit, 0))
 
             macros[keybit] = macro
 

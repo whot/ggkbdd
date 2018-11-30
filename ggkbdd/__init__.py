@@ -25,6 +25,12 @@ logger = logging.getLogger('ggkbdd')
 
 
 class Keyboard(object):
+    """
+    :param str path: the path to the device node
+    :param libevdev.EventCode mode_key: the mode key
+    :param dict macros: a dictionary of macros with the key code as key and
+        the value as list of (key code, value) tuples
+    """
     def __init__(self, path, mode_key, macros):
         self.fd = open(path, 'rb')
         # FIXME: O_NONBLOCK
@@ -83,11 +89,9 @@ class Keyboard(object):
             return
 
         macro = self._macros[event.code]
-        for k in macro:
-            press = InputEvent(k, value=1)
-            release = InputEvent(k, value=0)
+        for k, v in macro:
+            event = InputEvent(k, value=v)
             syn = InputEvent(libevdev.EV_SYN.SYN_REPORT, value=0)
-            self._uinput.send_events([press, syn])
+            self._uinput.send_events([event, syn])
             time.sleep(0.008)
-            self._uinput.send_events([release, syn])
-        logger.debug(f'Macros sent: {", ".join([x.name for x in macro])}')
+        logger.debug(f'Macros sent: {" ".join([x[0].name for x in macro])}')

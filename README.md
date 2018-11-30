@@ -66,13 +66,17 @@ ModeKey=CAPSLOCK
 [Macros]
 A=B C
 F11=H E L L O
+LEFTCTRL=+LEFTSHIFT U P P E R -LEFTSHIFT L O W ER
 ```
 
 This example uses capslock as the mode key and maps the A key to the key
 sequence "bc" and F11 to the key sequence "hello".
 
 All key-related entries must match the key names as defined in
-`linux/input-event-codes.h`.
+`linux/input-event-codes.h`. If the key is prefixed by `+` it is sent as a
+key press only. If the key is prefixed by a `-`, it is sent as a key release
+only. If any key is still down at the end of the macro, you're going to get
+key repeats so don't do that.
 
 Use `evemu-record` or `evtest` to read the key codes.
 
