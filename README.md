@@ -40,6 +40,19 @@ your keyboard device. Then use this as argument here:
 > sudo ./ggkbdd.py --verbose /dev/input/event3
 ```
 
+Installation
+============
+
+Don't bother, because it's so small it's almost not worth it. But if you
+must...
+
+```
+> sudo ./setup.py install
+```
+
+It's using python setuptool, there's heaps of documentation out there
+that'll explain what options are possible.
+
 Configuration
 =============
 
