@@ -57,15 +57,17 @@ class Keyboard(object):
             if not e.matches(libevdev.EV_KEY):
                 continue
 
-            # we don't care about key releases
+            # for the mode toggle key, we only process release events.
+            # Otherwise we may grab() the device before the release events
+            # and the rest of the stack thinks the key is being held down.
+            # For actual macro keys, we only care about key presses.
             if not e.value:
-                continue
+                if e.matches(libevdev.EV_KEY.KEY_ESC):
+                    self._toggle_mode(False)
 
-            if e.matches(libevdev.EV_KEY.KEY_ESC):
-                self._toggle_mode(False)
+                if e.matches(self._mode_key):
+                    self._toggle_mode(not self._in_macro_mode)
 
-            if e.matches(self._mode_key):
-                self._toggle_mode(not self._in_macro_mode)
                 continue
 
             if not self._in_macro_mode:
