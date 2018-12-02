@@ -99,6 +99,38 @@ german keyboard layout.
 
 You cannot map shift level keys like the exclamation mark, it's on `KEY_1`.
 
+systemd autostart
+=================
+
+Use this systemd file:
+```
+> cat /etc/systemd/system/ggkbd@.service
+[Unit]
+Description=ggkbbd auto-starter
+BindsTo=dev-input-%i.device
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/ggkbdd --config /path/to/ggkbddrc /dev/input/%I
+```
+
+Use this udev rule:
+```
+> cat /etc/udev/rules.d/99-ggkbdd.rules
+ACTION=="remove", GOTO="ggkbdd_end"
+KERNEL!="event*", GOTO="ggkbdd_end"
+
+KERNELS=="input*", \
+   ENV{ID_INPUT_KEYBOARD}=="1", \
+    ATTRS{name}=="AT Translated*", \
+    TAG+="systemd", ENV{SYSTEMD_WANTS}="ggkbdd@%k.service"
+
+LABEL="ggkbdd_end"
+```
+This will start ggkbdd for every keyboard with "AT Translated" in the name.
+ggkbdd creates a virtual device `GGKBDD your device's real name`, better
+make sure the udev rule doesn't match that too.
+
 About
 =====
 

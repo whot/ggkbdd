@@ -39,7 +39,7 @@ class Keyboard(object):
         # We just enable every KEY_* code. This includes as-yet undefined
         # ones because libevdev resolves those as KEY_1A2 hex names.
         d = libevdev.Device()
-        d.name = f'{self._evdev.name} macro mode'
+        d.name = f'GGKBDD {self._evdev.name}'
         for key in libevdev.EV_KEY.codes:
             if key.name.startswith('KEY_'):
                 d.enable(key)
