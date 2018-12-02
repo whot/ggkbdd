@@ -36,12 +36,14 @@ class Keyboard(object):
         # FIXME: O_NONBLOCK
         self._evdev = libevdev.Device(self.fd)
 
-        # We just enable every KEY_* code. This includes as-yet undefined
-        # ones because libevdev resolves those as KEY_1A2 hex names.
+        # We just enable every KEY_* code that the kernel defines.
+        # libevdev resolves all undefines ones as KEY_1A2 hex names but
+        # since the kernel is unlikely to route those, skip over them.
         d = libevdev.Device()
         d.name = f'GGKBDD {self._evdev.name}'
         for key in libevdev.EV_KEY.codes:
-            if key.name.startswith('KEY_'):
+            if (key.name.startswith('KEY_') and
+                not key.name == f'KEY_{key.value:03X}'):
                 d.enable(key)
         self._uinput = d.create_uinput_device()
 
