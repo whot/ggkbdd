@@ -61,7 +61,7 @@ with `--config path/to/config`. Its contents must be:
 
 ```
 [General]
-ModeKey=CAPSLOCK
+ModeKey=RIGHTCTRL
 
 [Macros]
 A=B C

@@ -2,7 +2,7 @@
 # the KEY_ prefix
 
 [General]
-ModeKey=CAPSLOCK
+ModeKey=RIGHTCTRL
 
 [Macros]
 A=B C
