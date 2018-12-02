@@ -32,7 +32,7 @@ class Keyboard(object):
         the value as list of (key code, value) tuples
     """
     def __init__(self, path, mode_key, macros):
-        self.fd = open(path, 'rb')
+        self.fd = open(path, 'r+b', buffering=0)
         # FIXME: O_NONBLOCK
         self._evdev = libevdev.Device(self.fd)
 
@@ -82,6 +82,39 @@ class Keyboard(object):
             self._evdev.grab()
         else:
             self._evdev.ungrab()
+        self._led_pattern(onoff)
+
+    def _led_pattern(self, onoff):
+        leds = [libevdev.EV_LED.LED_NUML,
+                libevdev.EV_LED.LED_CAPSL,
+                libevdev.EV_LED.LED_SCROLLL]
+
+        # Save the current state, in the hope that nothing will change until
+        # we mode-toggle back. Not perfect but good enough most of the time.
+        if onoff:
+            self._leds = {l: self._evdev.value[l] for l in leds}
+
+        # flash once
+        self._evdev.set_leds([(l, 0) for l in leds])
+        time.sleep(0.15)
+        self._evdev.set_leds([(l, 1) for l in leds])
+        time.sleep(0.15)
+
+        # left/right direction marquee
+        if onoff:
+            self._evdev.set_leds([(l, 0) for l in leds])
+        else:
+            leds.reverse()
+            self._evdev.set_leds([(l, 1) for l in leds])
+
+        time.sleep(0.1)
+        for l in leds:
+            self._evdev.set_leds([(l, onoff)])
+            time.sleep(0.1)
+
+        # restore the previous state
+        if not onoff:
+            self._evdev.set_leds([(l, v) for l, v in self._leds.items()])
 
     def _macro(self, event):
         if event.code not in self._macros:
